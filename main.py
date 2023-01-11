@@ -1,5 +1,9 @@
 import chess
-import chess.polygot
+import chess.polyglot
+import chess.svg
+import chess.pgn
+import chess.engine
+
 
 board = chess.Board()
 
@@ -61,13 +65,8 @@ kings_table = [
     -30, -40, -40, -50, -50, -40, -40, -30]
 
 
-# update
-def __init__():
-    chess_algorithm()
-
-
 # check end state of game
-def chess_algorithm():
+def evaluate_board():
     if board.is_checkmate():
         if board.turn:
             return -9999
@@ -94,6 +93,7 @@ def chess_algorithm():
 
 # calculate_scores
     material = 100 * (wp - bp) + 320 * (wn - bn) + 330 * (wb - bb) + 500 * (wr - br) + 900 * (wq - bq)
+
     pawnsq = sum([pawns_table[i] for i in board.pieces(chess.PAWN, chess.WHITE)])
     pawnsq = pawnsq + sum([-pawns_table[chess.square_mirror(i)]
                            for i in board.pieces(chess.PAWN, chess.BLACK)])
@@ -122,7 +122,61 @@ def chess_algorithm():
         return -eval
 
 
-# openings we have to download this
+def alphabeta(alpha, beta, depthleft):
+    bestscore = -9999
+    if (depthleft == 0):
+        return quiesce(alpha, beta)
+    for move in board.legal_moves:
+        board.push(move)
+        score = -alphabeta(-beta, -alpha, depthleft - 1)
+        board.pop()
+        if (score >= beta):
+            return score
+        if (score > bestscore):
+            bestscore = score
+        if (score > alpha):
+            alpha = score
+    return bestscore
+
+
+def quiesce(alpha, beta):
+    stand_pat = evaluate_board()
+    if (stand_pat >= beta):
+        return beta
+    if (alpha < stand_pat):
+        alpha = stand_pat
+    for move in board.legal_moves:
+        if board.is_capture(move):
+            board.push(move)
+            score = -quiesce(-beta, -alpha)
+            board.pop()
+
+        if (score >= beta):
+            return beta
+        if (score > alpha):
+            alpha = score
+    return alpha
+
+
+def try_moves(depth):
+    # openings we have to download this
     try:
-        move = chess.polyglot.MemoryMappedReader("D:/Users/Carstens/books/human.bin").weighted_choice(board).move
+        # change to your file location
+        move = chess.polyglot.MemoryMappedReader("D:/Program Files/JetBrains/PythonBooks/human.bin").weighted_choice(board).move
         return move
+    except:
+        bestMove = chess.Move.null()
+        bestValue = -99999
+        alpha = -100000
+        beta = 100000
+        for move in board.legal_moves:
+            board.push(move)
+            boardValue = -alphabeta(-beta, -alpha, depth - 1)
+            if boardValue > bestValue:
+                bestValue = boardValue
+                bestMove = move
+            if (boardValue > alpha):
+                alpha = boardValue
+            board.pop()
+        return bestMove
+
