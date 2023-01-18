@@ -63,7 +63,7 @@ class ChessEngine:
             else:
                 # get the human's move
                 # move = input("Please enter your move (e.g. e2e4): ")
-                SpeechRecognition.speech_to_text(self)
+                move = SpeechRecognition.speech_to_text()
                 try:
                     self.board.push_san(move)
                 except ValueError:
@@ -76,6 +76,7 @@ class ChessEngine:
         # print the result of the game
         result = self.board.result()
         print(result)
+
 
 engine = ChessEngine()
 engine.play()

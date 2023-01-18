@@ -1,6 +1,7 @@
 import chess
-board = chess.Board()
 from new import ChessEngine
+
+board = chess.Board()
 engine = ChessEngine
 
 engine.play()
