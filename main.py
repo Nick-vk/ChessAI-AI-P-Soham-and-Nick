@@ -2,7 +2,11 @@
 import chess.engine
 board = chess.Board()
 
-engine = chess.engine.SimpleEngine.popen_uci(["python.exe", "D:/Program Files/JetBrains/ChessAI-AI-P-Soham-and-Nick/SimpleEngine.py"])
+# this does not work like that
+# engine = chess.engine.SimpleEngine.popen_uci(["python.exe", "D:/Program Files/JetBrains/ChessAI-AI-P-Soham-and-Nick/SimpleEngine.py"])
+from new import ChessEngine
+engine = ChessEngine
+
 
 while not board.is_game_over():
     if board.turn:
@@ -14,7 +18,7 @@ while not board.is_game_over():
         except:
             print("Invalid move. Please enter a valid move.")
     else:
-        result = engine.play(board, chess.engine.Limit(time=0.1))
+        result = engine.play(board, engine.Limit(time=0.1))
         board.push(result.move)
 engine.quit()
 
