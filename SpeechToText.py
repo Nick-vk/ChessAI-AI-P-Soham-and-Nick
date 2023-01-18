@@ -22,11 +22,11 @@ class SpeechRecognition:
             # for testing purposes, we're just using the default API key
             # to use another API key, use `r.recognize_google(audio, key="GOOGLE_SPEECH_RECOGNITION_API_KEY")`
             # instead of `r.recognize_google(audio)`
-            lowercase_string = r.recognize_google(audio).lower()
-            no_space_string = lowercase_string.replace(" ", "")
-            print("Google Speech Recognition thinks you said " + r.recognize_google(audio))
-            print(no_space_string)
-            return no_space_string
+            output = r.recognize_google(audio)
+            reformatted_move = output.lower().replace(" ", "")
+            print("Google Speech Recognition thinks you said " + output)
+            print(reformatted_move)
+            return reformatted_move
         except sr.UnknownValueError:
             print("Google Speech Recognition could not understand audio")
         except sr.RequestError as e:

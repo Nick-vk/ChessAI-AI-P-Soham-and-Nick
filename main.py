@@ -6,4 +6,3 @@ engine = ChessEngine
 
 engine.play()
 engine.quit()
-
