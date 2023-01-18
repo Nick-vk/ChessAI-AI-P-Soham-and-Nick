@@ -1,6 +1,6 @@
 import chess
 import random
-import SpeechRecognition
+from SpeechToText import SpeechRecognition
 
 
 class ChessEngine:
@@ -63,7 +63,7 @@ class ChessEngine:
             else:
                 # get the human's move
                 # move = input("Please enter your move (e.g. e2e4): ")
-                SpeechRecognition
+                SpeechRecognition.speech_to_text()
                 try:
                     self.board.push_san(move)
                 except ValueError:
