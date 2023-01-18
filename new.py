@@ -53,7 +53,7 @@ class ChessEngine:
         # heuristic 7: move a random piece
         return random.choice(legal_moves)
 
-    def play(self, SpeechRecognition):
+    def play(self):
         while not self.board.is_game_over():
             # check if it's the engine's turn to move
             if self.board.turn == chess.WHITE:
@@ -77,5 +77,5 @@ class ChessEngine:
         result = self.board.result()
         print(result)
 
-# engine = ChessEngine()
-# engine.play()
+engine = ChessEngine()
+engine.play()
