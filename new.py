@@ -68,7 +68,7 @@ class ChessEngine:
                     continue
 
             # Print board after each move
-            print(board)
+            print(self.board)
 
         # print the result of the game
         result = self.board.result()
