@@ -1,5 +1,4 @@
-
-import chess.engine
+import chess
 board = chess.Board()
 
 # this does not work like that
@@ -18,7 +17,7 @@ while not board.is_game_over():
         except:
             print("Invalid move. Please enter a valid move.")
     else:
-        result = engine.play(board, engine.Limit(time=0.1))
-        board.push(result.move)
+        result = engine.make_move
+        board.push(result)
 engine.quit()
 
