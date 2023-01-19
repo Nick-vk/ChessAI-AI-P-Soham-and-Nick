@@ -197,7 +197,7 @@ class SimpleEngine:
                 except ValueError:
                     print("Invalid mode, please enter a valid move.")
             else:
-                move = self.try_moves(depth=1)
+                move = self.try_moves(depth=5)
                 print("Engine move: ", move)
                 self.board.push(move)
 

@@ -159,7 +159,7 @@ class SimpleEngine:
         # openings we have to download this
         try:
             # change to your file location
-            move = chess.polyglot.MemoryMappedReader("D:/Program Files/JetBrains/PythonBooks/human.bin").weighted_choice(self.board).move
+            move = chess.polyglot.MemoryMappedReader("E:/Programs/JetBrains/PythonBooks/M11.2.bin").weighted_choice(self.board).move
             return move
         except:
             bestMove = chess.Move.null()
@@ -177,7 +177,33 @@ class SimpleEngine:
                 self.board.pop()
             return bestMove
 
-    def play(self):
+    def color_pick(self):
+        color = input("Please enter the engine's color: ")
+        if color == "w":
+            self.engine_white()
+        elif color == "b":
+            self.engine_black()
+        else:
+            print("Invalid color, please enter a letter like w or b")
+
+    def engine_white(self):
+        while not self.board.is_game_over():
+            if self.board.turn == chess.WHITE:
+                move = self.try_moves(depth=5)
+                print("Engine move: ", move)
+                self.board.push(move)
+            else:
+                move = input("Please enter your move: ")
+                try:
+                    self.board.push_san(move)
+                except ValueError:
+                    print("Invalid mode, please enter a valid move.")
+
+            # print board after each move and result after the game ends
+            print(self.board)
+        print(self.board.result)
+
+    def engine_black(self):
         while not self.board.is_game_over():
             if self.board.turn == chess.WHITE:
                 # display.start(self.board.fen())
@@ -187,7 +213,7 @@ class SimpleEngine:
                 except ValueError:
                     print("Invalid mode, please enter a valid move.")
             else:
-                move = self.try_moves(depth=1)
+                move = self.try_moves(depth=3)
                 print("Engine move: ", move)
                 self.board.push(move)
 
@@ -200,4 +226,4 @@ class SimpleEngine:
         # display.update(self.board.fen())
 
 
-SimpleEngine().play()
+SimpleEngine().color_pick()
