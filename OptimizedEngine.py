@@ -2,6 +2,7 @@ import chess
 import chess.polyglot
 import chess.svg
 import chess.pgn
+import os
 # from chessboard import display
 # from IPython.display import SVG
 
@@ -71,70 +72,70 @@ class SimpleEngine:
     # check end state of game
     def evaluate_board(self):
         if self.board.is_checkmate():
-            if self.board.turn:
-                return -9999
-            else:
-                return 9999
-        if self.board.is_stalemate():
-            return 0
-        if self.board.is_insufficient_material():
+            return -9999 if self.board.turn else 9999
+        elif self.board.is_stalemate() or self.board.is_insufficient_material():
             return 0
 
-    # calculate_pieces
-        wp = len(self.board.pieces(chess.PAWN, chess.WHITE))
-        bp = len(self.board.pieces(chess.PAWN, chess.BLACK))
-        wn = len(self.board.pieces(chess.KNIGHT, chess.WHITE))
-        bn = len(self.board.pieces(chess.KNIGHT, chess.BLACK))
-        wb = len(self.board.pieces(chess.BISHOP, chess.WHITE))
-        bb = len(self.board.pieces(chess.BISHOP, chess.BLACK))
-        wr = len(self.board.pieces(chess.ROOK, chess.WHITE))
-        br = len(self.board.pieces(chess.ROOK, chess.BLACK))
-        wq = len(self.board.pieces(chess.QUEEN, chess.WHITE))
-        bq = len(self.board.pieces(chess.QUEEN, chess.BLACK))
+        # calculate_pieces
+        piece_counts = {chess.PAWN: {chess.WHITE: 0, chess.BLACK: 0},
+                        chess.KNIGHT: {chess.WHITE: 0, chess.BLACK: 0},
+                        chess.BISHOP: {chess.WHITE: 0, chess.BLACK: 0},
+                        chess.ROOK: {chess.WHITE: 0, chess.BLACK: 0},
+                        chess.QUEEN: {chess.WHITE: 0, chess.BLACK: 0}}
+        for piece_type in piece_counts.keys():
+            for color in [chess.WHITE, chess.BLACK]:
+                piece_counts[piece_type][color] = len(self.board.pieces(piece_type, color))
 
-    # calculate_scores
-        material = 100 * (wp - bp) + 320 * (wn - bn) + 330 * (wb - bb) + 500 * (wr - br) + 900 * (wq - bq)
+        # calculate_scores
+        material = 100 * (piece_counts[chess.PAWN][chess.WHITE] - piece_counts[chess.PAWN][chess.BLACK]) + 320 * (piece_counts[chess.KNIGHT][chess.WHITE] - piece_counts[chess.KNIGHT][chess.BLACK]) + 330 * (piece_counts[chess.BISHOP][chess.WHITE] - piece_counts[chess.BISHOP][chess.BLACK]) + 500 * (piece_counts[chess.ROOK][chess.WHITE] - piece_counts[chess.ROOK][chess.BLACK]) + 900 * (piece_counts[chess.QUEEN][chess.WHITE] - piece_counts[chess.QUEEN][chess.BLACK])
 
         pawnsq = sum([pawns_table[i] for i in self.board.pieces(chess.PAWN, chess.WHITE)])
-        pawnsq = pawnsq + sum([-pawns_table[chess.square_mirror(i)]
-                               for i in self.board.pieces(chess.PAWN, chess.BLACK)])
+        pawnsq += sum([-pawns_table[chess.square_mirror(i)] for i in self.board.pieces(chess.PAWN, chess.BLACK)])
         knightsq = sum([knights_table[i] for i in self.board.pieces(chess.KNIGHT, chess.WHITE)])
-        knightsq = knightsq + sum([-knights_table[chess.square_mirror(i)]
-                                   for i in self.board.pieces(chess.KNIGHT, chess.BLACK)])
+        knightsq += sum([-knights_table[chess.square_mirror(i)] for i in self.board.pieces(chess.KNIGHT, chess.BLACK)])
         bishopsq = sum([bishops_table[i] for i in self.board.pieces(chess.BISHOP, chess.WHITE)])
-        bishopsq = bishopsq + sum([-bishops_table[chess.square_mirror(i)]
-                                   for i in self.board.pieces(chess.BISHOP, chess.BLACK)])
+        bishopsq += sum([-bishops_table[chess.square_mirror(i)] for i in self.board.pieces(chess.BISHOP, chess.BLACK)])
         rooksq = sum([rooks_table[i] for i in self.board.pieces(chess.ROOK, chess.WHITE)])
-        rooksq = rooksq + sum([-rooks_table[chess.square_mirror(i)]
-                               for i in self.board.pieces(chess.ROOK, chess.BLACK)])
+        rooksq += sum([-rooks_table[chess.square_mirror(i)] for i in self.board.pieces(chess.ROOK, chess.BLACK)])
         queensq = sum([queens_table[i] for i in self.board.pieces(chess.QUEEN, chess.WHITE)])
-        queensq = queensq + sum([-queens_table[chess.square_mirror(i)]
-                                 for i in self.board.pieces(chess.QUEEN, chess.BLACK)])
+        queensq += sum([-queens_table[chess.square_mirror(i)] for i in self.board.pieces(chess.QUEEN, chess.BLACK)])
         kingsq = sum([kings_table[i] for i in self.board.pieces(chess.KING, chess.WHITE)])
-        kingsq = kingsq + sum([-kings_table[chess.square_mirror(i)]
-                               for i in self.board.pieces(chess.KING, chess.BLACK)])
+        kingsq += sum([-kings_table[chess.square_mirror(i)] for i in self.board.pieces(chess.KING, chess.BLACK)])
+        knightsq = knightsq + sum([-knights_table[chess.square_mirror(i)] for i in self.board.pieces(chess.KNIGHT, chess.BLACK)])
+        bishopsq = sum([bishops_table[i] for i in self.board.pieces(chess.BISHOP, chess.WHITE)])
+        bishopsq = bishopsq + sum([-bishops_table[chess.square_mirror(i)] for i in self.board.pieces(chess.BISHOP, chess.BLACK)])
+        rooksq = sum([rooks_table[i] for i in self.board.pieces(chess.ROOK, chess.WHITE)])
+        rooksq = rooksq + sum([-rooks_table[chess.square_mirror(i)] for i in self.board.pieces(chess.ROOK, chess.BLACK)])
+        queensq = sum([queens_table[i] for i in self.board.pieces(chess.QUEEN, chess.WHITE)])
+        queensq = queensq + sum([-queens_table[chess.square_mirror(i)] for i in self.board.pieces(chess.QUEEN, chess.BLACK)])
+        kingsq = sum([kings_table[i] for i in self.board.pieces(chess.KING, chess.WHITE)])
+        kingsq = kingsq + sum([-kings_table[chess.square_mirror(i)] for i in self.board.pieces(chess.KING, chess.BLACK)])
 
-    # evaluate position
+        # evaluate position
         eval = material + pawnsq + knightsq + bishopsq + rooksq + queensq + kingsq
-        if self.board.turn:
-            return eval
-        else:
-            return -eval
+        return eval if self.board.turn else -eval
 
     def alphabeta(self, alpha, beta, depthleft):
         bestscore = -9999
-        if (depthleft == 0):
+        if depthleft == 0:
             return self.quiesce(alpha, beta)
+
         for move in self.board.legal_moves:
             self.board.push(move)
             score = -self.alphabeta(-beta, -alpha, depthleft - 1)
             self.board.pop()
-            if (score >= beta):
+
+            if score >= beta:
                 return score
-            if (score > bestscore):
+            if score > bestscore:
                 bestscore = score
-            if (score > alpha):
+            if score > alpha:
                 alpha = score
+
+            # alpha-beta pruning
+            if alpha >= beta:
+                break
+
         return bestscore
 
     def quiesce(self, alpha, beta):
@@ -143,7 +144,12 @@ class SimpleEngine:
             return beta
         if (alpha < stand_pat):
             alpha = stand_pat
-        for move in self.board.legal_moves:
+
+        # Order moves based on their potential to improve alpha
+        moves = self.board.legal_moves
+        moves = sorted(moves, key=lambda move: -self.evaluate_move(move))
+
+        for move in moves:
             if self.board.is_capture(move):
                 self.board.push(move)
                 score = -self.quiesce(-beta, -alpha)
@@ -155,27 +161,31 @@ class SimpleEngine:
                     alpha = score
         return alpha
 
+    def evaluate_move(self, move):
+        self.board.push(move)
+        score = self.evaluate_board()
+        self.board.pop()
+        return score
+
     def try_moves(self, depth):
-        # openings we have to download this
-        try:
-            # change to your file location
-            move = chess.polyglot.MemoryMappedReader("D:/Program Files/JetBrains/PythonBooks/human.bin").weighted_choice(self.board).move
-            return move
-        except:
-            bestMove = chess.Move.null()
-            bestValue = -99999
-            alpha = -100000
-            beta = 100000
-            for move in self.board.legal_moves:
-                self.board.push(move)
-                boardValue = -self.alphabeta(-beta, -alpha, depth - 1)
-                if boardValue > bestValue:
-                    bestValue = boardValue
-                    bestMove = move
-                if (boardValue > alpha):
-                    alpha = boardValue
-                self.board.pop()
-            return bestMove
+        if os.path.exists("D:/Program Files/JetBrains/PythonBooks/human.bin"):
+            with chess.polyglot.MemoryMappedReader("D:/Program Files/JetBrains/PythonBooks/human.bin") as reader:
+                move = reader.weighted_choice(self.board).move
+                return move
+        bestMove = chess.Move.null()
+        bestValue = float("-inf")
+        alpha = float("-inf")
+        beta = float("inf")
+        for move in self.board.legal_moves:
+            self.board.push(move)
+            boardValue = -self.alphabeta(-beta, -alpha, depth - 1)
+            if boardValue > bestValue:
+                bestValue = boardValue
+                bestMove = move
+            if (boardValue > alpha):
+                alpha = boardValue
+            self.board.pop()
+        return bestMove
 
     def play(self):
         while not self.board.is_game_over():
