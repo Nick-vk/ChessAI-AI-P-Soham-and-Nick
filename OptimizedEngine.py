@@ -3,6 +3,7 @@ import chess.polyglot
 import chess.svg
 import chess.pgn
 import os
+
 # from chessboard import display
 # from IPython.display import SVG
 
@@ -72,7 +73,7 @@ class SimpleEngine:
     # check end state of game
     def evaluate_board(self):
         if self.board.is_checkmate():
-            return -9999 if self.board.turn else 9999
+            return float("-inf") if self.board.turn else float("inf")
         elif self.board.is_stalemate() or self.board.is_insufficient_material():
             return 0
 
@@ -87,7 +88,12 @@ class SimpleEngine:
                 piece_counts[piece_type][color] = len(self.board.pieces(piece_type, color))
 
         # calculate_scores
-        material = 100 * (piece_counts[chess.PAWN][chess.WHITE] - piece_counts[chess.PAWN][chess.BLACK]) + 320 * (piece_counts[chess.KNIGHT][chess.WHITE] - piece_counts[chess.KNIGHT][chess.BLACK]) + 330 * (piece_counts[chess.BISHOP][chess.WHITE] - piece_counts[chess.BISHOP][chess.BLACK]) + 500 * (piece_counts[chess.ROOK][chess.WHITE] - piece_counts[chess.ROOK][chess.BLACK]) + 900 * (piece_counts[chess.QUEEN][chess.WHITE] - piece_counts[chess.QUEEN][chess.BLACK])
+        material = 100 * (piece_counts[chess.PAWN][chess.WHITE] - piece_counts[chess.PAWN][chess.BLACK]) + 320 * (
+                    piece_counts[chess.KNIGHT][chess.WHITE] - piece_counts[chess.KNIGHT][chess.BLACK]) + 330 * (
+                               piece_counts[chess.BISHOP][chess.WHITE] - piece_counts[chess.BISHOP][
+                           chess.BLACK]) + 500 * (
+                               piece_counts[chess.ROOK][chess.WHITE] - piece_counts[chess.ROOK][chess.BLACK]) + 900 * (
+                               piece_counts[chess.QUEEN][chess.WHITE] - piece_counts[chess.QUEEN][chess.BLACK])
 
         pawnsq = sum([pawns_table[i] for i in self.board.pieces(chess.PAWN, chess.WHITE)])
         pawnsq += sum([-pawns_table[chess.square_mirror(i)] for i in self.board.pieces(chess.PAWN, chess.BLACK)])
@@ -101,22 +107,27 @@ class SimpleEngine:
         queensq += sum([-queens_table[chess.square_mirror(i)] for i in self.board.pieces(chess.QUEEN, chess.BLACK)])
         kingsq = sum([kings_table[i] for i in self.board.pieces(chess.KING, chess.WHITE)])
         kingsq += sum([-kings_table[chess.square_mirror(i)] for i in self.board.pieces(chess.KING, chess.BLACK)])
-        knightsq = knightsq + sum([-knights_table[chess.square_mirror(i)] for i in self.board.pieces(chess.KNIGHT, chess.BLACK)])
+        knightsq = knightsq + sum(
+            [-knights_table[chess.square_mirror(i)] for i in self.board.pieces(chess.KNIGHT, chess.BLACK)])
         bishopsq = sum([bishops_table[i] for i in self.board.pieces(chess.BISHOP, chess.WHITE)])
-        bishopsq = bishopsq + sum([-bishops_table[chess.square_mirror(i)] for i in self.board.pieces(chess.BISHOP, chess.BLACK)])
+        bishopsq = bishopsq + sum(
+            [-bishops_table[chess.square_mirror(i)] for i in self.board.pieces(chess.BISHOP, chess.BLACK)])
         rooksq = sum([rooks_table[i] for i in self.board.pieces(chess.ROOK, chess.WHITE)])
-        rooksq = rooksq + sum([-rooks_table[chess.square_mirror(i)] for i in self.board.pieces(chess.ROOK, chess.BLACK)])
+        rooksq = rooksq + sum(
+            [-rooks_table[chess.square_mirror(i)] for i in self.board.pieces(chess.ROOK, chess.BLACK)])
         queensq = sum([queens_table[i] for i in self.board.pieces(chess.QUEEN, chess.WHITE)])
-        queensq = queensq + sum([-queens_table[chess.square_mirror(i)] for i in self.board.pieces(chess.QUEEN, chess.BLACK)])
+        queensq = queensq + sum(
+            [-queens_table[chess.square_mirror(i)] for i in self.board.pieces(chess.QUEEN, chess.BLACK)])
         kingsq = sum([kings_table[i] for i in self.board.pieces(chess.KING, chess.WHITE)])
-        kingsq = kingsq + sum([-kings_table[chess.square_mirror(i)] for i in self.board.pieces(chess.KING, chess.BLACK)])
+        kingsq = kingsq + sum(
+            [-kings_table[chess.square_mirror(i)] for i in self.board.pieces(chess.KING, chess.BLACK)])
 
         # evaluate position
         eval = material + pawnsq + knightsq + bishopsq + rooksq + queensq + kingsq
         return eval if self.board.turn else -eval
 
     def alphabeta(self, alpha, beta, depthleft):
-        bestscore = -9999
+        bestscore = float("-inf")
         if depthleft == 0:
             return self.quiesce(alpha, beta)
 
@@ -140,9 +151,9 @@ class SimpleEngine:
 
     def quiesce(self, alpha, beta):
         stand_pat = self.evaluate_board()
-        if (stand_pat >= beta):
+        if stand_pat >= beta:
             return beta
-        if (alpha < stand_pat):
+        if alpha < stand_pat:
             alpha = stand_pat
 
         # Order moves based on their potential to improve alpha
@@ -154,7 +165,6 @@ class SimpleEngine:
                 self.board.push(move)
                 score = -self.quiesce(-beta, -alpha)
                 self.board.pop()
-
                 if (score >= beta):
                     return beta
                 if (score > alpha):
@@ -163,13 +173,22 @@ class SimpleEngine:
 
     def evaluate_move(self, move):
         self.board.push(move)
-        score = self.evaluate_board()
+        score = 0
+        # prefer moves that are promotion or capture or checkmate
+        if move.promotion or self.board.is_capture(move):
+            score += 2
+        # prefer moves that are castling
+        if self.board.is_castling(move):
+            score += 1
+        # suspend moves that lead to being checked
+        if self.board.is_check():
+            score -= 2
         self.board.pop()
         return score
 
     def try_moves(self, depth):
-        if os.path.exists("D:/Program Files/JetBrains/PythonBooks/human.bin"):
-            with chess.polyglot.MemoryMappedReader("D:/Program Files/JetBrains/PythonBooks/human.bin") as reader:
+        if os.path.exists("E:/Programs/JetBrains/PythonBooks/M11.2.bin"):
+            with chess.polyglot.MemoryMappedReader("E:/Programs/JetBrains/PythonBooks/M11.2.bin") as reader:
                 move = reader.weighted_choice(self.board).move
                 return move
         bestMove = chess.Move.null()
@@ -187,7 +206,32 @@ class SimpleEngine:
             self.board.pop()
         return bestMove
 
-    def play(self):
+    def color_pick(self):
+        color = input("Please enter the engine's color: ")
+        if color == "w":
+            self.engine_white()
+        elif color == "b":
+            self.engine_black()
+        else:
+            print("Invalid color, please enter a letter like w or b")
+
+    def engine_white(self):
+        while not self.board.is_game_over():
+            if self.board.turn == chess.WHITE:
+                move = self.try_moves(depth=5)
+                print("Engine move: ", move)
+                self.board.push(move)
+            else:
+                move = input("Please enter your move: ")
+                try:
+                    self.board.push_san(move)
+                except ValueError:
+                    print("Invalid mode, please enter a valid move.")
+            # print board after each move and result after the game ends
+            print(self.board)
+        print(self.board.result)
+
+    def engine_black(self):
         while not self.board.is_game_over():
             if self.board.turn == chess.WHITE:
                 # display.start(self.board.fen())
@@ -197,10 +241,9 @@ class SimpleEngine:
                 except ValueError:
                     print("Invalid mode, please enter a valid move.")
             else:
-                move = self.try_moves(depth=5)
+                move = self.try_moves(depth=3)
                 print("Engine move: ", move)
                 self.board.push(move)
-
             # print board after each move and result after the game ends
             print(self.board)
             # print(chess.svg.board(self.board, size=350))
@@ -210,4 +253,4 @@ class SimpleEngine:
         # display.update(self.board.fen())
 
 
-SimpleEngine().play()
+SimpleEngine().color_pick()

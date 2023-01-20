@@ -95,27 +95,27 @@ class SimpleEngine:
     # calculate_scores
         material = 100 * (wp - bp) + 320 * (wn - bn) + 330 * (wb - bb) + 500 * (wr - br) + 900 * (wq - bq)
 
-        pawnsq = sum([pawns_table[i] for i in self.board.pieces(chess.PAWN, chess.WHITE)])
-        pawnsq = pawnsq + sum([-pawns_table[chess.square_mirror(i)]
+        pawn_score = sum([pawns_table[i] for i in self.board.pieces(chess.PAWN, chess.WHITE)])
+        pawn_score = pawn_score + sum([-pawns_table[chess.square_mirror(i)]
                                for i in self.board.pieces(chess.PAWN, chess.BLACK)])
-        knightsq = sum([knights_table[i] for i in self.board.pieces(chess.KNIGHT, chess.WHITE)])
-        knightsq = knightsq + sum([-knights_table[chess.square_mirror(i)]
+        knight_score = sum([knights_table[i] for i in self.board.pieces(chess.KNIGHT, chess.WHITE)])
+        knight_score = knight_score + sum([-knights_table[chess.square_mirror(i)]
                                    for i in self.board.pieces(chess.KNIGHT, chess.BLACK)])
-        bishopsq = sum([bishops_table[i] for i in self.board.pieces(chess.BISHOP, chess.WHITE)])
-        bishopsq = bishopsq + sum([-bishops_table[chess.square_mirror(i)]
+        bishop_score = sum([bishops_table[i] for i in self.board.pieces(chess.BISHOP, chess.WHITE)])
+        bishop_score = bishop_score + sum([-bishops_table[chess.square_mirror(i)]
                                    for i in self.board.pieces(chess.BISHOP, chess.BLACK)])
-        rooksq = sum([rooks_table[i] for i in self.board.pieces(chess.ROOK, chess.WHITE)])
-        rooksq = rooksq + sum([-rooks_table[chess.square_mirror(i)]
+        rook_score = sum([rooks_table[i] for i in self.board.pieces(chess.ROOK, chess.WHITE)])
+        rook_score = rook_score + sum([-rooks_table[chess.square_mirror(i)]
                                for i in self.board.pieces(chess.ROOK, chess.BLACK)])
-        queensq = sum([queens_table[i] for i in self.board.pieces(chess.QUEEN, chess.WHITE)])
-        queensq = queensq + sum([-queens_table[chess.square_mirror(i)]
+        queen_score = sum([queens_table[i] for i in self.board.pieces(chess.QUEEN, chess.WHITE)])
+        queen_score = queen_score + sum([-queens_table[chess.square_mirror(i)]
                                  for i in self.board.pieces(chess.QUEEN, chess.BLACK)])
-        kingsq = sum([kings_table[i] for i in self.board.pieces(chess.KING, chess.WHITE)])
-        kingsq = kingsq + sum([-kings_table[chess.square_mirror(i)]
+        king_score = sum([kings_table[i] for i in self.board.pieces(chess.KING, chess.WHITE)])
+        king_score = king_score + sum([-kings_table[chess.square_mirror(i)]
                                for i in self.board.pieces(chess.KING, chess.BLACK)])
 
     # evaluate position
-        eval = material + pawnsq + knightsq + bishopsq + rooksq + queensq + kingsq
+        eval = material + pawn_score + knight_score + bishop_score + rook_score + queen_score + king_score
         if self.board.turn:
             return eval
         else:
@@ -156,7 +156,6 @@ class SimpleEngine:
         return alpha
 
     def try_moves(self, depth):
-        # openings we have to download this
         try:
             # change to your file location
             move = chess.polyglot.MemoryMappedReader("E:/Programs/JetBrains/PythonBooks/M11.2.bin").weighted_choice(self.board).move
