@@ -4,7 +4,7 @@ import chess.svg
 import chess.pgn
 import os
 
-# from chessboard import display
+from chessboard import display
 # from IPython.display import SVG
 
 
@@ -191,20 +191,22 @@ class SimpleEngine:
             with chess.polyglot.MemoryMappedReader("E:/Programs/JetBrains/PythonBooks/M11.2.bin") as reader:
                 move = reader.weighted_choice(self.board).move
                 return move
-        bestMove = chess.Move.null()
-        bestValue = float("-inf")
+        else:
+            print("file not found")
+        best_move = chess.Move.null()
+        best_value = float("-inf")
         alpha = float("-inf")
         beta = float("inf")
         for move in self.board.legal_moves:
             self.board.push(move)
-            boardValue = -self.alphabeta(-beta, -alpha, depth - 1)
-            if boardValue > bestValue:
-                bestValue = boardValue
-                bestMove = move
-            if (boardValue > alpha):
-                alpha = boardValue
+            board_value = -self.alphabeta(-beta, -alpha, depth - 1)
+            if board_value > best_value:
+                best_value = board_value
+                best_move = move
+            if board_value > alpha:
+                alpha = board_value
             self.board.pop()
-        return bestMove
+        return best_move
 
     def color_pick(self):
         color = input("Please enter the engine's color: ")
@@ -247,7 +249,7 @@ class SimpleEngine:
             # print board after each move and result after the game ends
             print(self.board)
             # print(chess.svg.board(self.board, size=350))
-            # display.update(self.board.fen())
+            display.update(move)
         # chess.svg.board(self.board, size=350)
         print(self.board.result)
         # display.update(self.board.fen())
