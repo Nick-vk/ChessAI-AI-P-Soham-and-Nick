@@ -187,26 +187,29 @@ class SimpleEngine:
         return score
 
     def try_moves(self, depth):
-        if os.path.exists("E:/Programs/JetBrains/PythonBooks/M11.2.bin"):
-            with chess.polyglot.MemoryMappedReader("E:/Programs/JetBrains/PythonBooks/M11.2.bin") as reader:
-                move = reader.weighted_choice(self.board).move
-                return move
-        else:
-            print("file not found")
-        best_move = chess.Move.null()
-        best_value = float("-inf")
-        alpha = float("-inf")
-        beta = float("inf")
-        for move in self.board.legal_moves:
-            self.board.push(move)
-            board_value = -self.alphabeta(-beta, -alpha, depth - 1)
-            if board_value > best_value:
-                best_value = board_value
-                best_move = move
-            if board_value > alpha:
-                alpha = board_value
-            self.board.pop()
-        return best_move
+        if not os.path.exists("E:/Programs/JetBrains/PythonBooks/M11.2.bin"):
+            print("Opening book not found")
+        try:
+            # change to your file location
+            move = chess.polyglot.MemoryMappedReader("E:/Programs/JetBrains/PythonBooks/M11.2.bin").weighted_choice(
+                self.board).move
+            return move
+        except:
+            best_move = chess.Move.null()
+            best_value = float("-inf")
+            alpha = float("-inf")
+            beta = float("inf")
+            for move in self.board.legal_moves:
+                self.board.push(move)
+                board_value = -self.alphabeta(-beta, -alpha, depth - 1)
+                if board_value > best_value:
+                    best_value = board_value
+                    best_move = move
+                if board_value > alpha:
+                    alpha = board_value
+                self.board.pop()
+            return best_move
+
 
     def color_pick(self):
         depth = 3
