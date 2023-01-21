@@ -1,7 +1,7 @@
 import chess
-import chess.polyglot
-import chess.svg
-import chess.pgn
+# import chess.polyglot
+# import chess.svg
+# import chess.pgn
 import os
 
 # from chessboard import display
@@ -95,35 +95,35 @@ class SimpleEngine:
                                piece_counts[chess.ROOK][chess.WHITE] - piece_counts[chess.ROOK][chess.BLACK]) + 900 * (
                                piece_counts[chess.QUEEN][chess.WHITE] - piece_counts[chess.QUEEN][chess.BLACK])
 
-        pawnsq = sum([pawns_table[i] for i in self.board.pieces(chess.PAWN, chess.WHITE)])
-        pawnsq += sum([-pawns_table[chess.square_mirror(i)] for i in self.board.pieces(chess.PAWN, chess.BLACK)])
-        knightsq = sum([knights_table[i] for i in self.board.pieces(chess.KNIGHT, chess.WHITE)])
-        knightsq += sum([-knights_table[chess.square_mirror(i)] for i in self.board.pieces(chess.KNIGHT, chess.BLACK)])
-        bishopsq = sum([bishops_table[i] for i in self.board.pieces(chess.BISHOP, chess.WHITE)])
-        bishopsq += sum([-bishops_table[chess.square_mirror(i)] for i in self.board.pieces(chess.BISHOP, chess.BLACK)])
-        rooksq = sum([rooks_table[i] for i in self.board.pieces(chess.ROOK, chess.WHITE)])
-        rooksq += sum([-rooks_table[chess.square_mirror(i)] for i in self.board.pieces(chess.ROOK, chess.BLACK)])
-        queensq = sum([queens_table[i] for i in self.board.pieces(chess.QUEEN, chess.WHITE)])
-        queensq += sum([-queens_table[chess.square_mirror(i)] for i in self.board.pieces(chess.QUEEN, chess.BLACK)])
-        kingsq = sum([kings_table[i] for i in self.board.pieces(chess.KING, chess.WHITE)])
-        kingsq += sum([-kings_table[chess.square_mirror(i)] for i in self.board.pieces(chess.KING, chess.BLACK)])
-        knightsq = knightsq + sum(
+        pawn_score = sum([pawns_table[i] for i in self.board.pieces(chess.PAWN, chess.WHITE)])
+        pawn_score += sum([-pawns_table[chess.square_mirror(i)] for i in self.board.pieces(chess.PAWN, chess.BLACK)])
+        knight_score = sum([knights_table[i] for i in self.board.pieces(chess.KNIGHT, chess.WHITE)])
+        knight_score += sum([-knights_table[chess.square_mirror(i)] for i in self.board.pieces(chess.KNIGHT, chess.BLACK)])
+        bishop_score = sum([bishops_table[i] for i in self.board.pieces(chess.BISHOP, chess.WHITE)])
+        bishop_score += sum([-bishops_table[chess.square_mirror(i)] for i in self.board.pieces(chess.BISHOP, chess.BLACK)])
+        rook_score = sum([rooks_table[i] for i in self.board.pieces(chess.ROOK, chess.WHITE)])
+        rook_score += sum([-rooks_table[chess.square_mirror(i)] for i in self.board.pieces(chess.ROOK, chess.BLACK)])
+        queen_score = sum([queens_table[i] for i in self.board.pieces(chess.QUEEN, chess.WHITE)])
+        queen_score += sum([-queens_table[chess.square_mirror(i)] for i in self.board.pieces(chess.QUEEN, chess.BLACK)])
+        king_score = sum([kings_table[i] for i in self.board.pieces(chess.KING, chess.WHITE)])
+        king_score += sum([-kings_table[chess.square_mirror(i)] for i in self.board.pieces(chess.KING, chess.BLACK)])
+        knight_score = knight_score + sum(
             [-knights_table[chess.square_mirror(i)] for i in self.board.pieces(chess.KNIGHT, chess.BLACK)])
-        bishopsq = sum([bishops_table[i] for i in self.board.pieces(chess.BISHOP, chess.WHITE)])
-        bishopsq = bishopsq + sum(
+        bishop_score = sum([bishops_table[i] for i in self.board.pieces(chess.BISHOP, chess.WHITE)])
+        bishop_score = bishop_score + sum(
             [-bishops_table[chess.square_mirror(i)] for i in self.board.pieces(chess.BISHOP, chess.BLACK)])
-        rooksq = sum([rooks_table[i] for i in self.board.pieces(chess.ROOK, chess.WHITE)])
-        rooksq = rooksq + sum(
+        rook_score = sum([rooks_table[i] for i in self.board.pieces(chess.ROOK, chess.WHITE)])
+        rook_score = rook_score + sum(
             [-rooks_table[chess.square_mirror(i)] for i in self.board.pieces(chess.ROOK, chess.BLACK)])
-        queensq = sum([queens_table[i] for i in self.board.pieces(chess.QUEEN, chess.WHITE)])
-        queensq = queensq + sum(
+        queen_score = sum([queens_table[i] for i in self.board.pieces(chess.QUEEN, chess.WHITE)])
+        queen_score = queen_score + sum(
             [-queens_table[chess.square_mirror(i)] for i in self.board.pieces(chess.QUEEN, chess.BLACK)])
-        kingsq = sum([kings_table[i] for i in self.board.pieces(chess.KING, chess.WHITE)])
-        kingsq = kingsq + sum(
+        king_score = sum([kings_table[i] for i in self.board.pieces(chess.KING, chess.WHITE)])
+        king_score = king_score + sum(
             [-kings_table[chess.square_mirror(i)] for i in self.board.pieces(chess.KING, chess.BLACK)])
 
         # evaluate position
-        eval = material + pawnsq + knightsq + bishopsq + rooksq + queensq + kingsq
+        eval = material + pawn_score + knight_score + bishop_score + rook_score + queen_score + king_score
         return eval if self.board.turn else -eval
 
     def alphabeta(self, alpha, beta, depthleft):
@@ -209,7 +209,6 @@ class SimpleEngine:
                     alpha = board_value
                 self.board.pop()
             return best_move
-
 
     def color_pick(self):
         depth = 3
