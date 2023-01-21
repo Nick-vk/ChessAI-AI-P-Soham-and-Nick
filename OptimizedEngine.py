@@ -1,5 +1,5 @@
 import chess
-# import chess.polyglot
+import chess.polyglot
 # import chess.svg
 # import chess.pgn
 import os
@@ -127,11 +127,15 @@ class SimpleEngine:
         return eval if self.board.turn else -eval
 
     def alphabeta(self, alpha, beta, depthleft):
+        # Order moves based on their potential to improve alpha
+        moves = self.board.legal_moves
+        moves = sorted(moves, key=lambda move: -self.evaluate_move(move))
+
         bestscore = float("-inf")
         if depthleft == 0:
-            return self.quiesce(alpha, beta)
+            return self.quiesce(alpha, beta, moves)
 
-        for move in self.board.legal_moves:
+        for move in moves:
             self.board.push(move)
             score = -self.alphabeta(-beta, -alpha, depthleft - 1)
             self.board.pop()
@@ -149,22 +153,18 @@ class SimpleEngine:
 
         return bestscore
 
-    def quiesce(self, alpha, beta):
+    def quiesce(self, alpha, beta, moves):
         stand_pat = self.evaluate_board()
         if stand_pat >= beta:
             return beta
         if alpha < stand_pat:
             alpha = stand_pat
-
-        # Order moves based on their potential to improve alpha
-        moves = self.board.legal_moves
-        moves = sorted(moves, key=lambda move: -self.evaluate_move(move))
-
         for move in moves:
             if self.board.is_capture(move):
                 self.board.push(move)
                 score = -self.quiesce(-beta, -alpha)
                 self.board.pop()
+
                 if score >= beta:
                     return beta
                 if score > alpha:
@@ -211,7 +211,7 @@ class SimpleEngine:
             return best_move
 
     def color_pick(self):
-        depth = 3
+        depth = 2
         color = input("Please enter the engine's color: ")
         if color == "w":
             self.engine_white(depth)
