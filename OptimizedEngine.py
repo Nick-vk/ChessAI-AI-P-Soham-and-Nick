@@ -165,9 +165,9 @@ class SimpleEngine:
                 self.board.push(move)
                 score = -self.quiesce(-beta, -alpha)
                 self.board.pop()
-                if (score >= beta):
+                if score >= beta:
                     return beta
-                if (score > alpha):
+                if score > alpha:
                     alpha = score
         return alpha
 
