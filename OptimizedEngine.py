@@ -4,7 +4,7 @@ import chess.svg
 import chess.pgn
 import os
 
-from chessboard import display
+# from chessboard import display
 # from IPython.display import SVG
 
 
@@ -209,18 +209,19 @@ class SimpleEngine:
         return best_move
 
     def color_pick(self):
+        depth = 3
         color = input("Please enter the engine's color: ")
         if color == "w":
-            self.engine_white()
+            self.engine_white(depth)
         elif color == "b":
-            self.engine_black()
+            self.engine_black(depth)
         else:
             print("Invalid color, please enter a letter like w or b")
 
-    def engine_white(self):
+    def engine_white(self, depth):
         while not self.board.is_game_over():
             if self.board.turn == chess.WHITE:
-                move = self.try_moves(depth=5)
+                move = self.try_moves(depth)
                 print("Engine move: ", move)
                 self.board.push(move)
             else:
@@ -233,7 +234,7 @@ class SimpleEngine:
             print(self.board)
         print(self.board.result)
 
-    def engine_black(self):
+    def engine_black(self, depth):
         while not self.board.is_game_over():
             if self.board.turn == chess.WHITE:
                 # display.start(self.board.fen())
@@ -243,13 +244,13 @@ class SimpleEngine:
                 except ValueError:
                     print("Invalid mode, please enter a valid move.")
             else:
-                move = self.try_moves(depth=3)
+                move = self.try_moves(depth)
                 print("Engine move: ", move)
                 self.board.push(move)
             # print board after each move and result after the game ends
             print(self.board)
             # print(chess.svg.board(self.board, size=350))
-            display.update(move)
+            # display.update(move)
         # chess.svg.board(self.board, size=350)
         print(self.board.result)
         # display.update(self.board.fen())
