@@ -1,8 +1,7 @@
 import chess
-from new import ChessEngine
+from OptimizedEngine import SimpleEngine
 
 board = chess.Board()
-engine = ChessEngine
+engine = SimpleEngine()
 
-engine.play()
-engine.quit()
+engine.launch()

@@ -3,6 +3,8 @@ import chess.polyglot
 # import chess.svg
 # import chess.pgn
 import os
+from SpeechToText import SpeechRecognition
+sr = SpeechRecognition
 
 # from chessboard import display
 # from IPython.display import SVG
@@ -131,9 +133,9 @@ class SimpleEngine:
         moves = self.board.legal_moves
         moves = sorted(moves, key=lambda move: -self.evaluate_move(move))
 
-        bestscore = float("-inf")
+        best_score = float("-inf")
         if depthleft == 0:
-            return self.quiesce(alpha, beta, moves)
+            return self.quiesce(alpha, beta)
 
         for move in moves:
             self.board.push(move)
@@ -142,8 +144,8 @@ class SimpleEngine:
 
             if score >= beta:
                 return score
-            if score > bestscore:
-                bestscore = score
+            if score > best_score:
+                best_score = score
             if score > alpha:
                 alpha = score
 
@@ -151,15 +153,15 @@ class SimpleEngine:
             if alpha >= beta:
                 break
 
-        return bestscore
+        return best_score
 
-    def quiesce(self, alpha, beta, moves):
+    def quiesce(self, alpha, beta):
         stand_pat = self.evaluate_board()
         if stand_pat >= beta:
             return beta
         if alpha < stand_pat:
             alpha = stand_pat
-        for move in moves:
+        for move in self.board.legal_moves:
             if self.board.is_capture(move):
                 self.board.push(move)
                 score = -self.quiesce(-beta, -alpha)
@@ -210,15 +212,23 @@ class SimpleEngine:
                 self.board.pop()
             return best_move
 
-    def color_pick(self):
-        depth = 2
-        color = input("Please enter the engine's color: ")
+    def launch(self):
+        # depth = input("Depth: ")
+        print("Enter the desired depth: ")
+        depth = sr().speech_to_text()
+        if not depth.isdigit():
+            print("Please enter an integer")
+
+        # color = input("Please enter the engine's color: ")
+        print("Please enter the engine's color: ")
+        color = sr().speech_to_text()
         if color == "w":
             self.engine_white(depth)
         elif color == "b":
             self.engine_black(depth)
         else:
             print("Invalid color, please enter a letter like w or b")
+            self.launch()
 
     def engine_white(self, depth):
         while not self.board.is_game_over():
@@ -227,7 +237,10 @@ class SimpleEngine:
                 print("Engine move: ", move)
                 self.board.push(move)
             else:
-                move = input("Please enter your move: ")
+                # type as move input
+                # move = input("Please enter your move: ")
+                # speech to text as move input
+                move = sr().speech_to_text()
                 try:
                     self.board.push_san(move)
                 except ValueError:
@@ -240,7 +253,10 @@ class SimpleEngine:
         while not self.board.is_game_over():
             if self.board.turn == chess.WHITE:
                 # display.start(self.board.fen())
-                move = input("Please enter your move: ")
+                # type as move input
+                # move = input("Please enter your move: ")
+                # speech to text as move input
+                move = sr().speech_to_text()
                 try:
                     self.board.push_san(move)
                 except ValueError:
@@ -258,4 +274,4 @@ class SimpleEngine:
         # display.update(self.board.fen())
 
 
-SimpleEngine().color_pick()
+# SimpleEngine().launch()

@@ -14,7 +14,7 @@ class SpeechRecognition:
 
     def speech_to_text(self):
         with sr.Microphone() as source:
-            print("Say something!")
+            print("Speak now")
             audio = r.listen(source)
 
         # recognize speech using Google Speech Recognition
@@ -22,12 +22,14 @@ class SpeechRecognition:
             # for testing purposes, we're just using the default API key
             # to use another API key, use `r.recognize_google(audio, key="GOOGLE_SPEECH_RECOGNITION_API_KEY")`
             # instead of `r.recognize_google(audio)`
-            output = r.recognize_google(audio)
-            reformatted_move = output.lower().replace(" ", "")
-            print("Google Speech Recognition thinks you said " + output)
-            print(reformatted_move)
-            return reformatted_move
+            output = r.recognize_google(audio).best_hypothesis
+            reformatted_input = output.lower().replace(" ", "")
+            # print("Google Speech Recognition thinks you said " + output)
+            # print(reformatted_input)
+            return reformatted_input
         except sr.UnknownValueError:
             print("Google Speech Recognition could not understand audio")
+            print("Let's try that again")
+            self.speech_to_text()
         except sr.RequestError as e:
             print("Could not request results from Google Speech Recognition service; {0}".format(e))
