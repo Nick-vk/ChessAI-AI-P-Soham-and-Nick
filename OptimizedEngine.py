@@ -213,11 +213,11 @@ class SimpleEngine:
             return best_move
 
     def launch(self):
-        depth = input("Depth: ")
+        depth = int(input("Depth: "))
         # print("Enter the desired depth: ")
-        # depth = sr().speech_to_text()
-        if not depth.isdigit():
-            print("Please enter an integer")
+        # depth = int(sr().speech_to_text())
+        # if not depth.isdigit():
+        # print("Depth needs to be an integer")
 
         color = input("Please enter the engine's color: ")
         # print("Please enter the engine's color: ")
@@ -240,9 +240,9 @@ class SimpleEngine:
                 self.board.push(move)
             else:
                 # type as move input
-                # move = input("Please enter your move: ")
+                move = input("Please enter your move: ")
                 # speech to text as move input
-                move = sr().speech_to_text()
+                # move = sr().speech_to_text()
                 try:
                     self.board.push_san(move)
                 except ValueError:
@@ -256,9 +256,9 @@ class SimpleEngine:
             if self.board.turn == chess.WHITE:
                 # display.start(self.board.fen())
                 # type as move input
-                # move = input("Please enter your move: ")
+                move = input("Please enter your move: ")
                 # speech to text as move input
-                move = sr().speech_to_text()
+                # move = sr().speech_to_text()
                 try:
                     self.board.push_san(move)
                 except ValueError:
