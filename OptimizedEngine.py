@@ -1,6 +1,7 @@
 import chess
 import chess.polyglot
-# import chess.svg
+import chess.svg
+import webbrowser
 # import chess.pgn
 import os
 from SpeechToText import SpeechRecognition
@@ -238,6 +239,7 @@ class SimpleEngine:
                 move = self.try_moves(depth)
                 print("Engine move: ", move)
                 self.board.push(move)
+                self.display_board(self.board)
             else:
                 # type as move input
                 move = input("Please enter your move: ")
@@ -245,6 +247,7 @@ class SimpleEngine:
                 # move = sr().speech_to_text()
                 try:
                     self.board.push_san(move)
+                    self.display_board(self.board)
                 except ValueError:
                     print("Invalid mode, please enter a valid move.")
             # print board after each move and result after the game ends
@@ -261,12 +264,14 @@ class SimpleEngine:
                 # move = sr().speech_to_text()
                 try:
                     self.board.push_san(move)
+                    self.display_board(self.board)
                 except ValueError:
                     print("Invalid mode, please enter a valid move.")
             else:
                 move = self.try_moves(depth)
                 print("Engine move: ", move)
                 self.board.push(move)
+                self.display_board(self.board)
             # print board after each move and result after the game ends
             print(self.board)
             # print(chess.svg.board(self.board, size=350))
@@ -275,5 +280,11 @@ class SimpleEngine:
         print(self.board.result)
         # display.update(self.board.fen())
 
+    def display_board(self, board):
+        svg = chess.svg.board(board=board)
+        with open("board.svg", "w") as f:
+            f.write(svg)
+
+        webbrowser.open("board.svg")
 
 SimpleEngine().launch()
