@@ -92,10 +92,9 @@ class SimpleEngine:
         # calculate_scores
         material = 100 * (piece_counts[chess.PAWN][chess.WHITE] - piece_counts[chess.PAWN][chess.BLACK]) + 320 * (
                     piece_counts[chess.KNIGHT][chess.WHITE] - piece_counts[chess.KNIGHT][chess.BLACK]) + 330 * (
-                               piece_counts[chess.BISHOP][chess.WHITE] - piece_counts[chess.BISHOP][
-                           chess.BLACK]) + 500 * (
-                               piece_counts[chess.ROOK][chess.WHITE] - piece_counts[chess.ROOK][chess.BLACK]) + 900 * (
-                               piece_counts[chess.QUEEN][chess.WHITE] - piece_counts[chess.QUEEN][chess.BLACK])
+                    piece_counts[chess.BISHOP][chess.WHITE] - piece_counts[chess.BISHOP][chess.BLACK]) + 500 * (
+                    piece_counts[chess.ROOK][chess.WHITE] - piece_counts[chess.ROOK][chess.BLACK]) + 900 * (
+                    piece_counts[chess.QUEEN][chess.WHITE] - piece_counts[chess.QUEEN][chess.BLACK])
 
         pawn_score = sum([pawns_table[i] for i in self.board.pieces(chess.PAWN, chess.WHITE)])
         pawn_score += sum([-pawns_table[chess.square_mirror(i)] for i in self.board.pieces(chess.PAWN, chess.BLACK)])
@@ -189,6 +188,7 @@ class SimpleEngine:
         return score
 
     def try_moves(self, depth):
+        # change to your file location
         if not os.path.exists("E:/Programs/JetBrains/PythonBooks/M11.2.bin"):
             print("Opening book not found")
         try:
