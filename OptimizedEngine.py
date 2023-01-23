@@ -6,6 +6,8 @@ import webbrowser
 import os
 from SpeechToText import SpeechRecognition
 sr = SpeechRecognition
+# Change to your file destination
+opening_book = "D:/Program Files/chess/opnening books/computer.bin"
 
 # from chessboard import display
 # from IPython.display import SVG
@@ -190,11 +192,11 @@ class SimpleEngine:
 
     def try_moves(self, depth):
         # change to your file location
-        if not os.path.exists("D:/Program Files/chess/computer.bin"):
+        if not os.path.exists(opening_book):
             print("Opening book not found")
         try:
             # change to your file location
-            move = chess.polyglot.MemoryMappedReader("D:/Program Files/chess/opnening books/computer.bin").weighted_choice(
+            move = chess.polyglot.MemoryMappedReader(opening_book).weighted_choice(
                 self.board).move
             return move
         except:
@@ -213,10 +215,11 @@ class SimpleEngine:
                 self.board.pop()
             return best_move
 
-    def launch(self):
-        depth = int(input("Depth: "))
+    def launch(self, listening_time):
+        # depth = int(input("Depth: "))
         # print("Enter the desired depth: ")
-        # depth = int(sr().speech_to_text())
+        depth = int(sr().speech_to_text(listening_time))
+        print("depth set to", depth)
         # if not depth.isdigit():
         # print("Depth needs to be an integer")
 
@@ -225,43 +228,21 @@ class SimpleEngine:
         # color = sr().speech_to_text()
         if color == "w":
             print("engine color set to white")
-            self.engine_white(depth)
+            self.play(depth, "w", listening_time)
         elif color == "b":
             print("engine color set to black")
-            self.engine_black(depth)
+            self.play(depth, "b", listening_time)
         else:
             print("Invalid color, please enter a letter like w or b")
             self.launch()
 
-    def engine_white(self, depth):
+    def play(self, depth, engine_color, listening_time):
         while not self.board.is_game_over():
-            if self.board.turn == chess.WHITE:
-                move = self.try_moves(depth)
-                print("Engine move: ", move)
-                self.board.push(move)
-                self.display_board(self.board)
-            else:
+            if (self.board.turn == chess.WHITE and engine_color == "b") or (self.board.turn == chess.BLACK and engine_color == "w"):
                 # type as move input
-                move = input("Please enter your move: ")
+                # move = input("Please enter your move: ")
                 # speech to text as move input
-                # move = sr().speech_to_text()
-                try:
-                    self.board.push_san(move)
-                    self.display_board(self.board)
-                except ValueError:
-                    print("Invalid mode, please enter a valid move.")
-            # print board after each move and result after the game ends
-            print(self.board)
-        print(self.board.result)
-
-    def engine_black(self, depth):
-        while not self.board.is_game_over():
-            if self.board.turn == chess.WHITE:
-                # display.start(self.board.fen())
-                # type as move input
-                move = input("Please enter your move: ")
-                # speech to text as move input
-                # move = sr().speech_to_text()
+                move = sr().speech_to_text(listening_time)
                 try:
                     self.board.push_san(move)
                     self.display_board(self.board)
@@ -287,4 +268,4 @@ class SimpleEngine:
 
         webbrowser.open("board.svg")
 
-SimpleEngine().launch()
+# SimpleEngine().launch(listening_time)
