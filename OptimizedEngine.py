@@ -193,7 +193,7 @@ class SimpleEngine:
             print("Opening book not found")
         try:
             # change to your file location
-            move = chess.polyglot.MemoryMappedReader("D:/Program Files/chess/computer.bin").weighted_choice(
+            move = chess.polyglot.MemoryMappedReader("D:/Program Files/chess/opnening books/computer.bin").weighted_choice(
                 self.board).move
             return move
         except:
@@ -219,9 +219,9 @@ class SimpleEngine:
         if not depth.isdigit():
             print("Please enter an integer")
 
-        # color = input("Please enter the engine's color: ")
-        print("Please enter the engine's color: ")
-        color = sr().speech_to_text()
+        color = input("Please enter the engine's color: ")
+        # print("Please enter the engine's color: ")
+        # color = sr().speech_to_text()
         if color == "w":
             print("engine color set to white")
             self.engine_white(depth)
@@ -276,4 +276,4 @@ class SimpleEngine:
         # display.update(self.board.fen())
 
 
-# SimpleEngine().launch()
+SimpleEngine().launch()
