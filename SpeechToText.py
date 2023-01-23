@@ -29,7 +29,7 @@ class SpeechRecognition:
             return reformatted_input
         except sr.UnknownValueError:
             print("Google Speech Recognition could not understand audio")
-            print("Let's try that again")
-            self.speech_to_text()
+            # print("Let's try that again")
+            # self.speech_to_text()
         except sr.RequestError as e:
             print("Could not request results from Google Speech Recognition service; {0}".format(e))

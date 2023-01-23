@@ -189,11 +189,11 @@ class SimpleEngine:
 
     def try_moves(self, depth):
         # change to your file location
-        if not os.path.exists("E:/Programs/JetBrains/PythonBooks/M11.2.bin"):
+        if not os.path.exists("D:/Program Files/chess/computer.bin"):
             print("Opening book not found")
         try:
             # change to your file location
-            move = chess.polyglot.MemoryMappedReader("E:/Programs/JetBrains/PythonBooks/M11.2.bin").weighted_choice(
+            move = chess.polyglot.MemoryMappedReader("D:/Program Files/chess/computer.bin").weighted_choice(
                 self.board).move
             return move
         except:
@@ -213,9 +213,9 @@ class SimpleEngine:
             return best_move
 
     def launch(self):
-        # depth = input("Depth: ")
-        print("Enter the desired depth: ")
-        depth = sr().speech_to_text()
+        depth = input("Depth: ")
+        # print("Enter the desired depth: ")
+        # depth = sr().speech_to_text()
         if not depth.isdigit():
             print("Please enter an integer")
 
@@ -223,8 +223,10 @@ class SimpleEngine:
         print("Please enter the engine's color: ")
         color = sr().speech_to_text()
         if color == "w":
+            print("engine color set to white")
             self.engine_white(depth)
         elif color == "b":
+            print("engine color set to black")
             self.engine_black(depth)
         else:
             print("Invalid color, please enter a letter like w or b")
