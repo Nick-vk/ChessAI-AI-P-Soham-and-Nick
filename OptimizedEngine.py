@@ -5,6 +5,12 @@ import webbrowser
 # import chess.pgn
 import os
 from SpeechToText import SpeechRecognition
+from flask import Flask, Response
+
+app = Flask(__name__)
+
+
+
 sr = SpeechRecognition
 # Change to your file destination
 opening_book = "D:/Program Files/chess/opnening books/computer.bin"
@@ -75,6 +81,13 @@ class SimpleEngine:
     def __init__(self):
         self.board = chess.Board()
 
+    @app.route('/board.svg')
+    def image():
+        with open("board.svg", "rb") as f:
+            return Response(f.read(), content_type="image/svg+xml")
+
+    if __name__ == '__main__':
+        app.run()
     # check end state of game
     def evaluate_board(self):
         if self.board.is_checkmate():
