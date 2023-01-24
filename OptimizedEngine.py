@@ -159,11 +159,11 @@ class SimpleEngine:
         return best_score
 
     def quiesce(self, alpha, beta):
-        stand_pat = self.evaluate_board()
-        if stand_pat >= beta:
+        node_value = self.evaluate_board()
+        if node_value >= beta:
             return beta
-        if alpha < stand_pat:
-            alpha = stand_pat
+        if alpha < node_value:
+            alpha = node_value
         for move in self.board.legal_moves:
             if self.board.is_capture(move):
                 self.board.push(move)
