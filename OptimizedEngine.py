@@ -74,6 +74,7 @@ kings_table = [
     -30, -40, -40, -50, -50, -40, -40, -30,
     -30, -40, -40, -50, -50, -40, -40, -30]
 
+
 class SimpleEngine:
     def __init__(self):
         self.board = chess.Board()
