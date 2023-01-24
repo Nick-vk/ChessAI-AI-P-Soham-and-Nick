@@ -1,17 +1,13 @@
 import chess
 import chess.polyglot
 import chess.svg
-# import chess.pgn
 import os
 from SpeechToText import SpeechRecognition
-from flask import Flask, Response
 
 sr = SpeechRecognition
-# Change to your file destination
-opening_book = "D:/Program Files/chess/opnening books/computer.bin"
 
-# from chessboard import display
-# from IPython.display import SVG
+# Change to your file destination
+opening_book = "D:/Program Files/chess/opening books/computer.bin"
 
 
 # heuristic tables per piece
@@ -76,13 +72,14 @@ class SimpleEngine:
     def __init__(self):
         self.board = chess.Board()
 
+# evaluate board function used for the Quiesce function to determine the score of each player
     def evaluate_board(self):
         if self.board.is_checkmate():
             return float("-inf") if self.board.turn else float("inf")
         elif self.board.is_stalemate() or self.board.is_insufficient_material():
             return 0
 
-        # calculate_pieces
+        # count the pieces and store them
         piece_counts = {chess.PAWN: {chess.WHITE: 0, chess.BLACK: 0},
                         chess.KNIGHT: {chess.WHITE: 0, chess.BLACK: 0},
                         chess.BISHOP: {chess.WHITE: 0, chess.BLACK: 0},
@@ -92,7 +89,7 @@ class SimpleEngine:
             for color in [chess.WHITE, chess.BLACK]:
                 piece_counts[piece_type][color] = len(self.board.pieces(piece_type, color))
 
-        # calculate the score: difference in material and multiplied by piece values calculated by AlphaZero
+        # calculate the score: difference in material and multiplied by piece values as calculated by AlphaZero
         material = 100 * (piece_counts[chess.PAWN][chess.WHITE] - piece_counts[chess.PAWN][chess.BLACK]) + \
                    305 * (piece_counts[chess.KNIGHT][chess.WHITE] - piece_counts[chess.KNIGHT][chess.BLACK]) + \
                    333 * (piece_counts[chess.BISHOP][chess.WHITE] - piece_counts[chess.BISHOP][chess.BLACK]) + \
@@ -131,7 +128,8 @@ class SimpleEngine:
         eval = material + pawn_score + knight_score + bishop_score + rook_score + queen_score + king_score
         return eval if self.board.turn else -eval
 
-    def alphabeta(self, alpha, beta, depthleft):
+# Negamax algorithm with alpha-beta pruning
+    def negamax(self, alpha, beta, depthleft):
         # Order moves based on their potential to improve alpha
         moves = self.board.legal_moves
         moves = sorted(moves, key=lambda move: -self.evaluate_move(move))
@@ -142,7 +140,8 @@ class SimpleEngine:
 
         for move in moves:
             self.board.push(move)
-            score = -self.alphabeta(-beta, -alpha, depthleft - 1)
+            # The better one player's position, the worse the other player's position
+            score = -self.negamax(-beta, -alpha, depthleft - 1)
             self.board.pop()
 
             if score >= beta:
@@ -158,6 +157,7 @@ class SimpleEngine:
 
         return best_score
 
+# Function to handle "unstable" nodes or "quiet" positions
     def quiesce(self, alpha, beta):
         node_value = self.evaluate_board()
         if node_value >= beta:
@@ -176,6 +176,7 @@ class SimpleEngine:
                     alpha = score
         return alpha
 
+# Evaluation of a single move to enable more aggressive pruning
     def evaluate_move(self, move):
         self.board.push(move)
         score = 0
@@ -191,6 +192,7 @@ class SimpleEngine:
         self.board.pop()
         return score
 
+# Main function of the algorithm which oversees different evaluation methods
     def try_moves(self, depth):
         # change to your file location
         if not os.path.exists(opening_book):
@@ -207,7 +209,7 @@ class SimpleEngine:
             beta = float("inf")
             for move in self.board.legal_moves:
                 self.board.push(move)
-                board_value = -self.alphabeta(-beta, -alpha, depth - 1)
+                board_value = -self.negamax(-beta, -alpha, depth - 1)
                 if board_value > best_value:
                     best_value = board_value
                     best_move = move
@@ -216,17 +218,18 @@ class SimpleEngine:
                 self.board.pop()
             return best_move
 
+# A function to set up the engine to enable fluent mode switching
     def launch(self):
         # depth = int(input("Depth: "))
-        # print("Enter the desired depth: ")
+
+        print("Enter the desired depth: ")
         depth = int(sr().speech_to_text())
         print("depth set to", depth)
-        # if not depth.isdigit():
-        # print("Depth needs to be an integer")
 
-        color = input("Please enter the engine's color: ")
-        # print("Please enter the engine's color: ")
-        # color = sr().speech_to_text()
+        # color = input("Please enter the engine's color: ")
+
+        print("Please enter the engine's color: ")
+        color = sr().speech_to_text()
         if color == "w":
             print("engine color set to white")
             self.play(depth, "w")
@@ -237,11 +240,13 @@ class SimpleEngine:
             print("Invalid color, please enter a letter like w or b")
             self.launch()
 
+# A function to handle the engine vs human interaction
     def play(self, depth, engine_color):
         while not self.board.is_game_over():
             if (self.board.turn == chess.WHITE and engine_color == "b") or (self.board.turn == chess.BLACK and engine_color == "w"):
                 # type as move input
                 # move = input("Please enter your move: ")
+
                 # speech to text as move input
                 move = sr().speech_to_text()
                 try:
@@ -253,19 +258,13 @@ class SimpleEngine:
                 move = self.try_moves(depth)
                 print("Engine move: ", move)
                 self.board.push(move)
+                # display board
                 self.display_board(self.board)
             # print board after each move and result after the game ends
             print(self.board)
-            # print(chess.svg.board(self.board, size=350))
-            # display.update(move)
-        # chess.svg.board(self.board, size=350)
         print(self.board.result)
-        # display.update(self.board.fen())
 
     def display_board(self, board):
         svg = chess.svg.board(board=board)
         with open("board.svg", "w") as f:
             f.write(svg)
-
-
-# SimpleEngine().launch(listening_time)

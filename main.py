@@ -6,6 +6,7 @@
 # using os
 
 # sources of code and inspiration:
+# https://www.chessprogramming.org/Alpha-Beta
 # https://en.wikipedia.org/wiki/Quiescence_search
 # https://en.wikipedia.org/wiki/Alpha%E2%80%93beta_pruning
 # https://en.wikipedia.org/wiki/Negamax
