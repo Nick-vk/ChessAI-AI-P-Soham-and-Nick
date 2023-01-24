@@ -1,7 +1,7 @@
 import chess
 from OptimizedEngine import SimpleEngine
 
-board = SimpleEngine().board
 engine = SimpleEngine()
+board = engine.board
 
 engine.launch()
