@@ -267,6 +267,5 @@ class SimpleEngine:
         with open("board.svg", "w") as f:
             f.write(svg)
 
-        webbrowser.open("board.svg")
 
 # SimpleEngine().launch(listening_time)
