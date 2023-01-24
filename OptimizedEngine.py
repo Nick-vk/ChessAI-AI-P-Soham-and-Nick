@@ -9,8 +9,6 @@ from flask import Flask, Response
 
 app = Flask(__name__)
 
-
-
 sr = SpeechRecognition
 # Change to your file destination
 opening_book = "D:/Program Files/chess/opnening books/computer.bin"
@@ -75,7 +73,6 @@ kings_table = [
     -30, -40, -40, -50, -50, -40, -40, -30,
     -30, -40, -40, -50, -50, -40, -40, -30,
     -30, -40, -40, -50, -50, -40, -40, -30]
-
 
 class SimpleEngine:
     def __init__(self):
