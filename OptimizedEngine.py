@@ -86,7 +86,7 @@ class SimpleEngine:
 
     if __name__ == '__main__':
         app.run()
-    # check end state of game
+
     def evaluate_board(self):
         if self.board.is_checkmate():
             return float("-inf") if self.board.turn else float("inf")
@@ -103,13 +103,14 @@ class SimpleEngine:
             for color in [chess.WHITE, chess.BLACK]:
                 piece_counts[piece_type][color] = len(self.board.pieces(piece_type, color))
 
-        # calculate_scores
-        material = 100 * (piece_counts[chess.PAWN][chess.WHITE] - piece_counts[chess.PAWN][chess.BLACK]) + 320 * (
-                    piece_counts[chess.KNIGHT][chess.WHITE] - piece_counts[chess.KNIGHT][chess.BLACK]) + 330 * (
-                    piece_counts[chess.BISHOP][chess.WHITE] - piece_counts[chess.BISHOP][chess.BLACK]) + 500 * (
-                    piece_counts[chess.ROOK][chess.WHITE] - piece_counts[chess.ROOK][chess.BLACK]) + 900 * (
-                    piece_counts[chess.QUEEN][chess.WHITE] - piece_counts[chess.QUEEN][chess.BLACK])
+        # calculate the score: difference in material and multiplied by piece values calculated by AlphaZero
+        material = 100 * (piece_counts[chess.PAWN][chess.WHITE] - piece_counts[chess.PAWN][chess.BLACK]) + \
+                   305 * (piece_counts[chess.KNIGHT][chess.WHITE] - piece_counts[chess.KNIGHT][chess.BLACK]) + \
+                   333 * (piece_counts[chess.BISHOP][chess.WHITE] - piece_counts[chess.BISHOP][chess.BLACK]) + \
+                   563 * (piece_counts[chess.ROOK][chess.WHITE] - piece_counts[chess.ROOK][chess.BLACK]) + \
+                   950 * (piece_counts[chess.QUEEN][chess.WHITE] - piece_counts[chess.QUEEN][chess.BLACK])
 
+        # multiply the difference with the values of the tables
         pawn_score = sum([pawns_table[i] for i in self.board.pieces(chess.PAWN, chess.WHITE)])
         pawn_score += sum([-pawns_table[chess.square_mirror(i)] for i in self.board.pieces(chess.PAWN, chess.BLACK)])
         knight_score = sum([knights_table[i] for i in self.board.pieces(chess.KNIGHT, chess.WHITE)])
@@ -137,7 +138,7 @@ class SimpleEngine:
         king_score = king_score + sum(
             [-kings_table[chess.square_mirror(i)] for i in self.board.pieces(chess.KING, chess.BLACK)])
 
-        # evaluate position
+        # evaluate position by adding material and positional scores
         eval = material + pawn_score + knight_score + bishop_score + rook_score + queen_score + king_score
         return eval if self.board.turn else -eval
 
@@ -247,13 +248,13 @@ class SimpleEngine:
             print("Invalid color, please enter a letter like w or b")
             self.launch()
 
-    def play(self, depth, engine_color, listening_time):
+    def play(self, depth, engine_color):
         while not self.board.is_game_over():
             if (self.board.turn == chess.WHITE and engine_color == "b") or (self.board.turn == chess.BLACK and engine_color == "w"):
                 # type as move input
                 # move = input("Please enter your move: ")
                 # speech to text as move input
-                move = sr().speech_to_text(listening_time)
+                move = sr().speech_to_text()
                 try:
                     self.board.push_san(move)
                     self.display_board(self.board)
