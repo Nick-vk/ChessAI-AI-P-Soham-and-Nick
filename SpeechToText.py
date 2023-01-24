@@ -20,6 +20,11 @@ class SpeechRecognition:
                 try:
                     output = recognizer.recognize_google(audio)
 
+                    # breakpoint
+                    if output == "stop":
+                        print("Engine shutting down")
+                        quit()
+
                     reformatted_input = output.lower().replace(" ", "")
                     return reformatted_input
 
