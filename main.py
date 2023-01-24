@@ -1,8 +1,7 @@
 import chess
 from OptimizedEngine import SimpleEngine
 
-board = chess.Board()
+board = SimpleEngine().board
 engine = SimpleEngine()
-listening_time = 5
 
-engine.launch(listening_time)
+engine.launch()

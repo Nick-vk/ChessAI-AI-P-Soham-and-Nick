@@ -14,7 +14,8 @@ class SpeechRecognition:
                 print("Set minimum energy threshold to {}".format(recognizer.energy_threshold))
             while True:
                 print("Speak now")
-                with microphone as source: audio = recognizer.listen(source)
+                with microphone as source:
+                    audio = recognizer.listen(source)
                 # recognize speech using Google Speech Recognition
                 try:
                     output = recognizer.recognize_google(audio)

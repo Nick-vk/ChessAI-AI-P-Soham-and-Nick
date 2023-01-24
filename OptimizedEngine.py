@@ -80,7 +80,7 @@ class SimpleEngine:
         self.board = chess.Board()
 
     @app.route('/board.svg')
-    def image():
+    def image(self):
         with open("board.svg", "rb") as f:
             return Response(f.read(), content_type="image/svg+xml")
 
@@ -226,10 +226,10 @@ class SimpleEngine:
                 self.board.pop()
             return best_move
 
-    def launch(self, listening_time):
+    def launch(self):
         # depth = int(input("Depth: "))
         # print("Enter the desired depth: ")
-        depth = int(sr().speech_to_text(listening_time))
+        depth = int(sr().speech_to_text())
         print("depth set to", depth)
         # if not depth.isdigit():
         # print("Depth needs to be an integer")
@@ -239,10 +239,10 @@ class SimpleEngine:
         # color = sr().speech_to_text()
         if color == "w":
             print("engine color set to white")
-            self.play(depth, "w", listening_time)
+            self.play(depth, "w")
         elif color == "b":
             print("engine color set to black")
-            self.play(depth, "b", listening_time)
+            self.play(depth, "b")
         else:
             print("Invalid color, please enter a letter like w or b")
             self.launch()
